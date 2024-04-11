@@ -1,0 +1,141 @@
+#!/bin/bash  
+ 
+cat /dev/null > /var/log/syslog
+cat /dev/null > /var/log/wtmp 
+cat /dev/null > /var/log/maillog
+cat /dev/null > /var/log/messages
+cat /dev/null > /var/log/openwebmail.log
+cat /dev/null > /var/log/maillog
+cat /dev/null > /var/log/secure
+# Force the client encoding for PostgreSQL 9.x
+export PGCLIENTENCODING="LATIN1"
+export HISTSIZE="1000000"
+export HISTFILESIZE="1000000000"
+export LC_ALL=C
+
+
+while [ : ]
+do
+	SERVICE="LoginServer"
+	if pgrep -x "$SERVICE" >/dev/null
+	then
+		sleep .5
+	else
+		sh ./stop
+		sleep .5
+		sh ./start
+		sleep 800
+	fi
+	
+	SERVICE2="GatewayServer"
+	if pgrep -x "$SERVICE2" >/dev/null
+	then
+		sleep .5
+	else
+		sh ./stop
+		sleep .5
+		sh ./start
+		sleep 300
+	fi
+	
+	SERVICE3="TicketServer"
+	if pgrep -x "$SERVICE3" >/dev/null
+	then
+		sleep .5
+	else
+		sh ./stop
+		sleep .5
+		sh ./start
+		sleep 300
+	fi
+	
+	SERVICE4="WorldServer"
+	if pgrep -x "$SERVICE4" >/dev/null
+	then
+		sleep .5
+	else
+		sh ./stop
+		sleep .5
+		sh ./start
+		sleep 300
+	fi
+
+	SERVICE99="MissionServer"
+	if pgrep -x "$SERVICE99" >/dev/null
+	then
+		sleep .5
+	else
+		sh ./stop
+		sleep .5
+		sh ./start
+		sleep 300
+	fi
+
+	
+	SERVICE6="ZoneServer"
+	if pgrep -x "$SERVICE6" >/dev/null
+	then
+		sleep .5
+	else
+		if pgrep -x "$SERVICE4" >/dev/null
+		then
+			find . -name "*.log.*" -type f -print -exec rm -rf {} \;  
+			cd /home/server/server_us/ZoneServer/
+			
+			./ZoneServer &
+			cd /home/server/
+			sleep 300
+		else
+			sh ./stop
+			sleep .5
+			sh ./start
+			sleep 300
+		fi
+	fi
+
+
+
+	SERVICE7="WorldServer2"
+	if pgrep -x "$SERVICE7" >/dev/null
+	then
+		sleep .5
+	else
+		if pgrep -x "$SERVICE" >/dev/null
+		then
+			find . -name "*.log.*" -type f -print -exec rm -rf {} \;  
+			cd /home/server/server_us/WorldServer2/
+			
+			./WorldServer2 &
+			cd /home/server/
+			sleep 300
+		else
+			sh ./stop
+			sleep .5
+			sh ./start
+			sleep 300
+		fi
+	fi
+	
+	SERVICE8="ZoneServer2"
+	if pgrep -x "$SERVICE8" >/dev/null
+	then
+		sleep .5
+	else
+		if pgrep -x "$SERVICE7" >/dev/null
+		then
+			find . -name "*.log.*" -type f -print -exec rm -rf {} \;  
+			cd /home/server/server_us/ZoneServer2/
+			
+			./ZoneServer2 &
+			cd /home/server/
+			sleep 300
+		else
+			sh ./stop
+			sleep .5
+			sh ./start
+			sleep 300
+		fi
+	fi
+	
+	sleep 150
+done
